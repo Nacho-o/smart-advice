@@ -15,6 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
 // Componentes
 import { AppComponent } from './app.component';
 import { DynamicFormComponent } from './forms/dynamic-form/dynamic-form.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -26,6 +27,7 @@ import { DynamicFormComponent } from './forms/dynamic-form/dynamic-form.componen
     BrowserModule,
     BrowserAnimationsModule, // <-- Módulo de animaciones
     AppRoutingModule,
+    ReactiveFormsModule,
     
     // Angular Material Modules
     MatTabsModule,

@@ -40,3 +40,18 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Frontend (Angular)
+smart-advice-frontend/node_modules/
+smart-advice-frontend/dist/
+smart-advice-frontend/.angular/cache
+
+# Backend (NestJS)
+smart-advice-backend/node_modules/
+smart-advice-backend/dist/
+smart-advice-backend/.env
+
+# General
+.DS_Store
+.idea
+*.log
