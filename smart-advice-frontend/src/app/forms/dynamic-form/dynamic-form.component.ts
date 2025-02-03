@@ -18,25 +18,42 @@ export class DynamicFormComponent implements OnInit {
     private fb: FormBuilder
   ) {}
 
-  ngOnInit() {
-    const formId = this.route.snapshot.paramMap.get('id');
-    this.formService.getForm(Number(formId)).subscribe((data) => {
+// dynamic-form.component.ts
+ngOnInit() {
+  console.log('[DynamicForm] Inicializando componente...');
+  const formId = this.route.snapshot.paramMap.get('id');
+  console.log('[DynamicForm] ID del formulario:', formId);
+
+  this.formService.getForm(Number(formId)).subscribe({
+    next: (data) => {
+      console.log('[DynamicForm] Datos recibidos del backend:', data);
       this.formData = data;
       this.createForm();
+    },
+    error: (err) => {
+      console.error('[DynamicForm] Error al cargar el formulario:', err);
+    },
+    complete: () => {
+      console.log('[DynamicForm] Solicitud completada');
+    }
+  });
+}
+
+createForm() {
+  console.log('[DynamicForm] Creando controles del formulario...');
+  const group: any = {};
+
+  this.formData.sections.forEach((section: any, index: number) => {
+    console.log(`[DynamicForm] Procesando sección ${index + 1}: ${section.name}`);
+    section.questions.forEach((question: any, qIndex: number) => {
+      console.log(`[DynamicForm] Pregunta ${qIndex + 1}: ${question.text}`);
+      group[`q_${question.id}`] = [null];
     });
-  }
+  });
 
-  createForm() {
-    const group: any = {};
-
-    this.formData.sections.forEach((section: any) => {
-      section.questions.forEach((question: any) => {
-        group[`q_${question.id}`] = [null]; // Inicializar controles
-      });
-    });
-
-    this.formGroup = this.fb.group(group);
-  }
+  this.formGroup = this.fb.group(group);
+  console.log('[DynamicForm] FormGroup creado:', this.formGroup);
+}
 
   onSubmit() {
     if (this.formGroup.valid) {
