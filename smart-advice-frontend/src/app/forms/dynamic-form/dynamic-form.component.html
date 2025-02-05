@@ -1,44 +1,64 @@
-<div *ngIf="formData" class="form-container">
-    <h1 class="form-title">{{ formData.name }}</h1>
+<div class="outer-container">
+    <!-- Barra lateral -->
+    <aside class="sidebar">
+      <ul>
+        <li *ngFor="let section of formData.sections; let i = index" 
+            [class.active]="i === currentTabIndex"
+            (click)="currentTabIndex = i">
+          <span class="step-number">{{ i + 1 }}</span>
+          {{ section.name }}
+        </li>
+      </ul>
+    </aside>
   
-    <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-      <mat-tab-group>
-        <mat-tab *ngFor="let section of formData.sections" [label]="section.name">
-          <div class="tab-content">
-            <div *ngFor="let question of section.questions" class="question-container">
-              <!-- Texto o Número -->
-              <mat-form-field *ngIf="question.response_type === 'text' || question.response_type === 'number'">
-                <mat-label>{{ question.text }}</mat-label>
-                <input 
-                  matInput 
-                  [type]="question.response_type === 'number' ? 'number' : 'text'"
-                  [formControlName]="'q_' + question.id"
-                >
-              </mat-form-field>
+    <!-- Contenedor del formulario -->
+    <div class="inner-container">
+      <h1 class="form-title">{{ formData.name }}</h1>
+    
+      <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+        <mat-tab-group [(selectedIndex)]="currentTabIndex" (selectedTabChange)="onTabChange($event)">
+          <mat-tab *ngFor="let section of formData.sections; let i = index">
+            <div class="tab-content">
+              <!-- Preguntas -->
+              <div *ngFor="let question of section.questions" class="question-container">
+                <mat-form-field *ngIf="question.response_type === 'text' || question.response_type === 'number'" appearance="fill">
+                  <mat-label>{{ question.text }}</mat-label>
+                  <input 
+                    matInput 
+                    [type]="question.response_type === 'number' ? 'number' : 'text'"
+                    [formControlName]="'q_' + question.id"
+                  >
+                </mat-form-field>
+    
+                <!-- Dropdown (Select) -->
+                <mat-form-field *ngIf="question.response_type === 'dropdown'" appearance="fill">
+                  <mat-label>{{ question.text }}</mat-label>
+                  <mat-select [formControlName]="'q_' + question.id">
+                    <mat-option *ngFor="let option of question.options" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+    
+                <!-- Sí/No (Radio Group) -->
+                <div *ngIf="question.response_type === 'yes_no'" class="yes-no-container">
+                  <p class="question-text">{{ question.text }}</p>
+                  <mat-radio-group [formControlName]="'q_' + question.id">
+                    <mat-radio-button value="Sí">Sí</mat-radio-button>
+                    <mat-radio-button value="No">No</mat-radio-button>
+                  </mat-radio-group>
+                </div>
+              </div>
   
-              <!-- Dropdown (Select) -->
-              <mat-form-field *ngIf="question.response_type === 'dropdown'">
-                <mat-label>{{ question.text }}</mat-label>
-                <mat-select [formControlName]="'q_' + question.id">
-                  <mat-option *ngFor="let option of question.options" [value]="option">
-                    {{ option }}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-  
-              <!-- Sí/No (Radio Group) -->
-              <div *ngIf="question.response_type === 'yes_no'" class="yes-no-container">
-                <p class="question-text">{{ question.text }}</p>
-                <mat-radio-group [formControlName]="'q_' + question.id">
-                  <mat-radio-button value="Sí">Sí</mat-radio-button>
-                  <mat-radio-button value="No">No</mat-radio-button>
-                </mat-radio-group>
+              <!-- Botones de navegación -->
+              <div class="navigation-buttons">
+                <button *ngIf="i > 0" mat-raised-button type="button" (click)="currentTabIndex = i - 1">Anterior</button>
+                <button *ngIf="i < formData.sections.length - 1" mat-raised-button color="primary" type="button" (click)="goToNextTab(i)">Siguiente</button>
+                <button *ngIf="i === formData.sections.length - 1" mat-raised-button color="primary" type="submit">Enviar</button>
               </div>
             </div>
-          </div>
-        </mat-tab>
-      </mat-tab-group>
-  
-      <button mat-raised-button color="primary" type="submit">Enviar</button>
-    </form>
+          </mat-tab>
+        </mat-tab-group>
+      </form>
+    </div>
   </div>
